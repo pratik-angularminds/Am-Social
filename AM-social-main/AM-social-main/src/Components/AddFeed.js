@@ -11,21 +11,22 @@ function AddFeed() {
   const [title, setTitle] = useState("");
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   let navigate = useNavigate();
+  const [image, setImage] = useState("");
 
   const handle = async () => {
-    if(title!==""){
-    axios
-      .post(`http://localhost:3000/api/AddFeed`, {
-        image: filename,
-        title: title,
-        path: filepath,
-        userId:user._id,
-        userfirstName:user.firstName,
-        likes: [],
-        comments: [],
-      })
-      .then((res) => console.log(res));
-    navigate("/");
+    if (title !== "") {
+      axios
+        .post(`http://localhost:3000/api/AddFeed`, {
+          image: filename,
+          title: title,
+          path: filepath,
+          userId: user._id,
+          userfirstName: user.firstName,
+          likes: [],
+          comments: [],
+        })
+        .then((res) => console.log(res));
+      navigate("/");
     }
     console.log(filepath, filename, title);
   };
@@ -33,7 +34,7 @@ function AddFeed() {
   // console.log(files);
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <center>
         <Grid
           item
@@ -41,35 +42,45 @@ function AddFeed() {
           xs={12}
           component="main"
           sx={{
-            width: "50vh",
-            height: "60vh",
-            padding: "5vh",
-            marginTop: "4%",
+            // width: "0vh",
+            // height: "60vh",
+            padding: "2vh",
             marginLeft: "auto",
             marginRight: "auto",
-            border: "2px solid",
-            borderColor: "secondary.main",
           }}
         >
-          <Grid container spacing={5}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h1>Add Feeds Here</h1>
+              <h3>Add Feeds Here</h3>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={7}>
               <TextField
                 id="outlined-basic"
                 label="Caption"
                 variant="outlined"
+                fullWidth
                 onChange={(e) => setTitle(e.target.value)}
               />
               <br />
               <br />
             </Grid>
-            <Grid item xs={12}>
+            <Grid
+              // item
+              container
+              xs={3}
+              direction="column"
+              justifyContent="center"
+              alignItems="flex-end"
+            >
+              {image !== "" && (
+                <img src={require(`../../../../Node/images/${image}`)}></img>
+              )}
               <input
                 type="file"
+                style={{ fontSize: "80%", marginLeft: 50 }}
                 onChange={(e) => {
                   console.log(e.target.value);
+                  setImage(e.target.value);
                   setFilename(e.target.files[0].name);
                   setFilepath(e.target.value);
                   let formData = new FormData();
@@ -80,18 +91,11 @@ function AddFeed() {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={2}>
               <Button variant="contained" onClick={handle}>
                 Post
               </Button>
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => navigate("/")}
-              >
-                Cancel
-              </Button>
             </Grid>
           </Grid>
         </Grid>

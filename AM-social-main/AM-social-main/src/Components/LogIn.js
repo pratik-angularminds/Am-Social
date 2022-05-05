@@ -4,13 +4,31 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import GoogleLogin from "react-google-login";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 function LogIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleLogIn = async (e) => {
     let payload = {
@@ -26,10 +44,15 @@ function LogIn() {
           if (res !== "User Not Exist" && res.data.token !== "undefined") {
             localStorage.setItem("user", JSON.stringify(res.data));
             localStorage.setItem("token", JSON.stringify(res.data.token));
-            navigate("/");
+            setError("Login Successfully !!");
+            setOpen(true);
+            setTimeout(() => {
+              navigate("/");
+            }, 1000);
           }
         } else {
           setError(res.data.error);
+          setOpen(true);
         }
       })
       .catch((err) => console.log(err));
@@ -42,25 +65,35 @@ function LogIn() {
       navigate("/");
     }
   }, []);
-  const loginwithgoogle=(res)=>{
+  const loginwithgoogle = (res) => {
     console.log("success", res);
-axios
-  .post("http://localhost:3000/GoogleLogin", {email:res.Lu.Bv})
-  .then((res) => {
-    console.log(res)
-     if (res.data.status !== false) {
-       if (res !== "User Not Exist" && res.data.token !== "undefined") {
-         localStorage.setItem("user", JSON.stringify(res.data));
-         localStorage.setItem("token", JSON.stringify(res.data.token));
-         navigate("/");
-       }
-     } else {
-       setError(res.data.error);
-     }
-  });
-  }
+    axios
+      .post("http://localhost:3000/GoogleLogin", { email: res.Lu.Bv })
+      .then((res) => {
+        console.log(res);
+        if (res.data.status !== false) {
+          if (res !== "User Not Exist" && res.data.token !== "undefined") {
+            setError("");
+            localStorage.setItem("user", JSON.stringify(res.data));
+            localStorage.setItem("token", JSON.stringify(res.data.token));
+            navigate("/");
+          }
+        } else {
+          setError(res.data.error);
+        }
+      });
+  };
   return (
     <Container>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={error !== "Login Successfully !!" ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
       <Grid
         item
         container
@@ -88,9 +121,9 @@ axios
             <Typography
               color="secondary.main"
               sx={{ fontWeight: "light" }}
-              // variant="h3"
+              variant="h4"
             >
-              AM SOCIAL
+              <b> AM SOCIAL</b>
             </Typography>
           </Grid>
 
@@ -106,11 +139,12 @@ axios
               size="small"
               onChange={(e) => setEmail(e.target.value)}
               id="email"
+              label="email"
               type="email"
               error={false}
               placeholder="Email Address"
               name="email"
-              autoComplete="email"
+              // autoComplete="email"
               sx={{ minWidth: "80%", textAlign: "center" }}
             />
           </Grid>
@@ -125,11 +159,12 @@ axios
               size="small"
               required
               name="password"
+              label="password"
               onChange={(e) => setPassword(e.target.value)}
               placeholder="password"
               type="password"
               id="password"
-              autoComplete="current-password"
+              // autoComplete="current-password"
               error={false}
               sx={{ minWidth: "80%", marginBottom: "10%" }}
             />
@@ -146,7 +181,6 @@ axios
           >
             <Button
               type="submit"
-              color="inherit"
               onClick={(e) => handleLogIn(e)}
               variant="contained"
               sx={{ minWidth: "50%" }}
@@ -216,7 +250,7 @@ axios
                 fontStyle: "italic",
               }}
             >
-              {token ? token.message : ""}
+              {token ? "" : ""}
             </Box>
           )}
           {
@@ -229,9 +263,7 @@ axios
                 fontWeight: "regular",
                 fontStyle: "italic",
               }}
-            >
-              {error}
-            </Box>
+            ></Box>
           }
         </Grid>
       </Grid>

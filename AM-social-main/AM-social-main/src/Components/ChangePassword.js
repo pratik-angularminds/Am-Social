@@ -1,41 +1,38 @@
-import { Button, Container, Grid, TextField } from "@mui/material";
+import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 
 function ChangePassword() {
+  const [password, setPassword] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  let navigate = useNavigate();
+  useEffect(() => {
+    if (
+      localStorage.getItem("user") === null &&
+      localStorage.getItem("token") === null
+    ) {
+      navigate("/login");
+    }
+  }, []);
 
-  const [password,setPassword]=useState("");
-  const [newPass,setNewPass]=useState("");
-  const [confirm,setConfirm]=useState("");
-  const [user,setUser]=useState(JSON.parse(localStorage.getItem("user")));
-  let navigate=useNavigate()
-useEffect(() => {
-  if(localStorage.getItem("user")===null && localStorage.getItem("token")===null)
-  {
-    navigate("/login")
-  }
-}, [])
-
-const handle=async()=>{
-if(newPass===confirm)
-{
-  if(user.password===password)
-  {
-      axios.put(`http://localhost:3000/Change/${user._id}`,{
-        password:newPass
-      })
-      .then(res=>console.log(res))
-      navigate("/")
-  }
-  else
-  alert("Old password is not matching!!!");
-}else
-{
-  alert("New Password And Confirm Password should be same!!!")
-}
-}
+  const handle = async () => {
+    if (newPass === confirm) {
+      if (user.password === password) {
+        axios
+          .put(`http://localhost:3000/Change/${user._id}`, {
+            password: newPass,
+          })
+          .then((res) => console.log(res));
+        navigate("/");
+      } else alert("Old password is not matching!!!");
+    } else {
+      alert("New Password And Confirm Password should be same!!!");
+    }
+  };
 
   return (
     <Container>
@@ -55,8 +52,8 @@ if(newPass===confirm)
           xs={12}
           component="main"
           sx={{
-            width: "40vh",
-            height: "40vh",
+            width: "50vh",
+            height: "50vh",
             padding: "5vh",
             marginTop: "4%",
             marginLeft: "auto",
@@ -65,6 +62,17 @@ if(newPass===confirm)
             borderColor: "secondary.main",
           }}
         >
+          <Grid
+            item
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Typography sx={{ fontWeight: "light" }} variant="h6">
+              <b> Change Password</b>
+            </Typography>
+          </Grid>
           <Grid
             item
             container
@@ -130,7 +138,6 @@ if(newPass===confirm)
           >
             <Button
               type="submit"
-              
               onClick={handle}
               variant="contained"
               sx={{ maxWidth: "50%", maxHeight: "90%" }}

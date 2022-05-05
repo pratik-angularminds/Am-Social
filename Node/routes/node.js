@@ -140,14 +140,21 @@ router.post("/GoogleLogin", async (req, res) => {
   }
 });
 
+const schemas = Joi.object({
+  email: Joi.string().required().email(),
+  password: Joi.string().required(),
+});
 router.post("/login", async (req, res) => {
   try {
+    const { error } = schemas.validate(req.body);
+    if (error)
+      return res.json({ status: false, error: error.details[0].message });
     const posts = await User.findOne({
       email: req.body.email,
       password: req.body.password,
     });
     if (!posts)
-      return res.json({ status: false, error: "Password is invalid" });
+      return res.json({ status: false, error: "Password is not valid" });
     const token = jwt.sign({ id: posts._id }, process.env.TOKEN_SECRET, {
       expiresIn: "10h",
     });
