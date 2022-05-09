@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
@@ -47,7 +47,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 function Feed() {
   let navigate = useNavigate();
-
+  const imageRef = useRef();
   const [filename, setFilename] = useState("");
   const [filepath, setFilepath] = useState("");
   const [title, setTitle] = useState("");
@@ -94,6 +94,7 @@ function Feed() {
       setStatus("success");
       setMassage("Post Uploaded Succesfully");
       setOpen(true);
+      imageRef.current.value = null;
       navigate("/");
     } else {
       setStatus("error");
@@ -132,7 +133,7 @@ function Feed() {
     setTimeout(() => {
       setlimit(limit + 3);
       callme(limit + 3);
-    }, 1000);
+    }, 2000);
   };
 
   const callme = async (i) => {
@@ -228,94 +229,148 @@ function Feed() {
             </Alert>
           </Snackbar>
           <Header />
-          <Card
-            sx={{
-              marginRight: "1%",
-              width: "100%",
-              fontSize: 20,
-              marginTop: 2,
-              backgroundColor: "white",
-            }}
-          >
-            <div>
-              <center>
+          <center>
+            <Card
+              sx={{
+                marginRight: "1%",
+                width: "80%",
+                fontSize: 20,
+                marginTop: 2,
+                backgroundColor: "#e0f7fa",
+                
+              }}
+            >
+              <CardHeader
+                style={{
+                  backgroundColor: "#abe9cd",
+                  backgroundImage:
+                    "linear-gradient(315deg, #abe9cd 0%, #3eadcf 74%)",
+                }}
+                title={
+                  <Typography
+                    variant="h5"
+                    color="white"
+                    sx={{
+                      fontWeight: "bold",
+
+                      textAlign: "center",
+                    }}
+                    component="h4"
+                  >
+                    Add Feed
+                  </Typography>
+                }
+              ></CardHeader>
+              <Grid
+                container
+                xs={12}
+                component="main"
+                sx={{ minHeight: "40vh" }}
+              >
                 <Grid
-                  item
+                  xs={6}
                   container
-                  xs={12}
-                  component="main"
-                  sx={{
-                    padding: "2vh",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <h2 style={{ color: "#880e4f" }}>Add Feeds </h2>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <hr style={{ color: "#880e4f" }}></hr>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        id="outlined-basic"
-                        label="Caption"
-                        variant="outlined"
-                        fullWidth
-                        onChange={(e) => setTitle(e.target.value)}
-                      />
-                      <br />
-                      <br />
-                    </Grid>
-                    <Grid
-                      // item
-                      container
-                      xs={2}
-                      direction="column"
-                      justifyContent="center"
-                      alignItems="flex-end"
-                    >
-                      <input
-                        type="file"
-                        style={{ fontSize: "80%", marginLeft: 50 }}
-                        onChange={(e) => {
-                          console.log(e.target.value);
+                  <Grid
+                    sx={{
+                      marginTop: "4vh",
+                      marginLeft: "2vh",
+                    }}
+                    container
+                    xs={6}
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <TextField
+                      value={title}
+                      id="outlined-basic"
+                      label="Caption"
+                      variant="outlined"
+                      fullWidth
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                    <br />
+                    <br />
+                  </Grid>
+                  <Grid
+                    container
+                    xs={6}
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="flex-start"
+                  >
+                    <input
+                      type="file"
+                      ref={imageRef}
+                      style={{ fontSize: "80%", marginLeft: 50 }}
+                      onChange={(e) => {
+                        console.log(e.target.value);
 
-                          setImage(e.target.files[0].name);
-                          setFilename(e.target.files[0].name);
-                          setFilepath(e.target.value);
-                          let formData = new FormData();
-                          formData.append("image", e.target.files[0]);
-                          axios
-                            .post("http://localhost:3000/api/upload", formData)
-                            .then((res) => console.log(res));
-                          setStatus("success");
-                          setMassage("File Uploaded Succesfully");
-                          setOpen(true);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={3}>
-                      {image !== "" && (
-                        <img
-                          style={{ maxHeight: "90%", maxWidth: "40%" }}
-                          src={require(`../../../../Node/images/${image}`)}
-                        ></img>
-                      )}
-                    </Grid>
-
-                    <Grid item xs={3}>
-                      <Button variant="contained" onClick={() => handle()}>
-                        Post
-                      </Button>
-                      &nbsp;&nbsp;&nbsp;&nbsp;
-                    </Grid>
+                        setFilename(e.target.files[0].name);
+                        setFilepath(e.target.value);
+                        let formData = new FormData();
+                        formData.append("image", e.target.files[0]);
+                        axios
+                        .post("http://localhost:3000/api/upload", formData)
+                        .then((res) => console.log(res));
+                        setImage(e.target.files[0].name);
+                        setStatus("success");
+                        setMassage("File Uploaded Succesfully");
+                        setOpen(true);
+                      }}
+                    />
                   </Grid>
                 </Grid>
-              </center>
-            </div>
-          </Card>
+                <Grid
+                  item
+                  xs={4}
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{
+                    marginTop: "2vh",
+                  }}
+                >
+                  {image !== "" && (
+                    <img
+                      style={{
+                        maxHeight: "90%",
+                        maxWidth: "90%",
+                        height: "100%",
+                        width: "100%",
+                      }}
+                      src={require(`../../../../Node/images/${image}`)}
+                    ></img>
+                  )}
+                </Grid>
+              </Grid>
+
+              <CardActions style={{ backgroundColor: "#fff3e0" }}>
+                {" "}
+                <Grid
+                  xs={12}
+                  container
+                  direction="row"
+                  justifyContent="right"
+                  alignItems="right"
+                  sx={{ padding: "1%"}}
+                >
+                  <Button
+                    variant="contained"
+                    onClick={() => handle()}
+                    style={{padding:"10px 100px 10px 100px"}}
+                  >
+                    Post
+                  </Button>
+                </Grid>
+              </CardActions>
+            </Card>
+          </center>
           <InfiniteScroll
             dataLength={data.length}
             next={fetchMoreData}
@@ -393,6 +448,7 @@ function Feed() {
                         <Card
                           sx={{
                             maxWidth: "60vh",
+
                             marginRight: "1%",
                             marginTop: 3,
                           }}
@@ -429,7 +485,10 @@ function Feed() {
 
                           <CardContent>
                             <img
-                              style={{ maxHeight: "30vh", height: "30vh" }}
+                              style={{
+                                maxHeight: "60vh",
+                                maxWidth: "60%",
+                              }}
                               src={require(`../../../../Node/images/${obj.image}`)}
                               alt="Trulli"
                             />
@@ -527,7 +586,7 @@ function Feed() {
                                             d._id === c._id && (
                                               <Avatar
                                                 {...stringAvatar(
-                                                  d && d.firstName
+                                                  d.firstName
                                                 )}
                                               />
                                             )

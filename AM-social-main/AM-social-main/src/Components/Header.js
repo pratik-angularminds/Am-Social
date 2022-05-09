@@ -27,15 +27,26 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const settings = ["Change Password", "Edit Profile", "Logout"];
-function Header() {
+
+function Header({flag,setFlag}) {
   let navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [check,setCheck] = useState(flag)
   const [user, setUser] = useState(
     (JSON.parse(localStorage.getItem("user")) &&
       JSON.parse(localStorage.getItem("user"))) ||
       ""
   );
+  if(flag ===true)
+  {
+    window.location.reload();
+    setFlag(false);
+  }
+  useEffect(()=>{
+    
+  },[check])
+
   const [open, setOpen] = React.useState(false);
   const [message, setMassage] = useState("");
   const [status, setStatus] = useState("");
@@ -158,7 +169,7 @@ function Header() {
         </Alert>
       </Snackbar>
 
-      <AppBar position="static" style={{ minWidth: "150vh", marginLeft: -23 }}>
+      <AppBar position="static" style={{ maxWidth: "180vh", marginLeft: -20 ,width:"150vh"}}>
         <Container
           maxWidth="xl"
           sx={{
